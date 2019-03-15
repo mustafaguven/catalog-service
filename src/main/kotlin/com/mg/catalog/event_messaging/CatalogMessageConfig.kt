@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Configuration
 @Configuration
 class CatalogMessageConfig : RabbitMqConfig() {
 
-    companion object {
+/*    companion object {
         const val ROUTING_KEY_CATALOG_ALL = "catalog.#"
         const val QUEUE_CATALOG_ALL = "catalog.all"
         const val QUEUE_CATALOG_CREATED = "catalog.created"
@@ -37,6 +37,6 @@ class CatalogMessageConfig : RabbitMqConfig() {
     fun bindingPlaced() = BindingBuilder.bind(queueOrderPlaced()).to(exchangeOrder()).with(QUEUE_CATALOG_PLACED)
 
     @Bean
-    fun bindingAll() = BindingBuilder.bind(queueOrderAll()).to(exchangeOrder()).with(ROUTING_KEY_CATALOG_ALL)
+    fun bindingAll() = BindingBuilder.bind(queueOrderAll()).to(exchangeOrder()).with(ROUTING_KEY_CATALOG_ALL)*/
 
 }

@@ -1,8 +1,8 @@
 package com.mg.catalog.controller
 
-import com.mg.catalog.controller.command.CatalogCommandController
 import com.mg.catalog.event_messaging.publish.CatalogMessageProducer
 import com.mg.catalog.services.ProductService
+import com.mg.eventbus.AbstractController
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.cloud.context.config.annotation.RefreshScope
 import org.springframework.hateoas.ResourceSupport
