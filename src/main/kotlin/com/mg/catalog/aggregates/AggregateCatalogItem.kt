@@ -9,24 +9,18 @@ import org.springframework.stereotype.Service
 @Service
 class AggregateCatalogItem {
 
-
-
     companion object {
         val log = logger(this)
-        const val CreateStyleVariantItemCommand = "CreateCatalogItemCommand"
-        const val DeleteItemCommand = "DeleteCatalogItemCommand"
     }
 
-    @RabbitListener(queues = [CreateStyleVariantItemCommand])
-    fun createItem(item: CreateCatalogItemCommand) {
-        log.info("eklenecek olan catalog item: $item")
+    @RabbitListener(queues = [CreateCatalogItemCommand.ID])
+    fun createItem(command: CreateCatalogItemCommand) {
+        log.info("eklenecek olan catalog item: $command")
     }
 
-
-    @RabbitListener(queues = [DeleteItemCommand])
-    fun createItem(item: DeleteCatalogItemCommand) {
-        log.info("silinecek catalog item: ${item.id}")
+    @RabbitListener(queues = [DeleteCatalogItemCommand.ID])
+    fun createItem(command: DeleteCatalogItemCommand) {
+        log.info("silinecek catalog item id: ${command.id}")
     }
-
 
 }
