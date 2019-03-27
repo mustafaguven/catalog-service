@@ -1,6 +1,10 @@
 spring:
   application:
     name: catalog-service
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/catalogdb
 
 server:
   port: 8800
+

@@ -32,7 +32,7 @@ class Application {
     lateinit var commandGateway: CommandGateway
 
     @EventListener(ApplicationReadyEvent::class)
-    fun onApplicationReadyEvent(){
+    fun onApplicationReadyEvent() {
         commandGateway.onApplicationReadyEvent(this.javaClass.`package`.name)
     }
 

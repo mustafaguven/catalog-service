@@ -1,8 +1,9 @@
 package com.mg.catalog.controller
 
-import com.mg.catalog.event_messaging.publish.CatalogMessageProducer
-import com.mg.catalog.services.ProductService
+import com.mg.catalog.document.Category
+import com.mg.catalog.query.ViewCatalog
 import com.mg.eventbus.AbstractController
+import org.bson.types.ObjectId
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.cloud.context.config.annotation.RefreshScope
 import org.springframework.hateoas.ResourceSupport
@@ -11,14 +12,14 @@ import org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestController
 
 @RefreshScope
 @RestController
 @ResponseStatus(HttpStatus.ACCEPTED)
-class CatalogController(val messageProducer: CatalogMessageProducer,
-                        val productService: ProductService) : AbstractController() {
+class CatalogController(val viewCatalog: ViewCatalog) : AbstractController() {
 
     @Value("\${app.id}")
     private val instance: String? = null
@@ -29,7 +30,17 @@ class CatalogController(val messageProducer: CatalogMessageProducer,
         return ResponseEntity.ok(id)
     }
 
-    @GetMapping
+    @GetMapping(value = ["/"])
+    fun getAll(): ResponseEntity<List<Category>> {
+        return ResponseEntity.ok(viewCatalog.showAll())
+    }
+
+    @GetMapping(value = ["/{id}"])
+    fun getCategoryById(@PathVariable("id") id: ObjectId): ResponseEntity<Category> {
+        return ResponseEntity.ok(viewCatalog.showCatalogItems(id))
+    }
+
+    @GetMapping(value = ["/rest"])
     @ResponseStatus(HttpStatus.OK)
     fun getLinks(): ResponseEntity<ResourceSupport> {
         val commands = ResourceSupport()
