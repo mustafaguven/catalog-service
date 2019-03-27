@@ -20,7 +20,7 @@ class AggregateCatalogItem(val categoryRepository: CategoryRepository,
     }
 
     @RabbitListener(queues = [CreateCatalogItemCommand.ID])
-    fun createItem(command: CreateCatalogItemCommand) = commandGateway.onHandle(command) {
+    fun on(command: CreateCatalogItemCommand) = commandGateway.onHandle(command) {
         val size = arrayOf(SizeVariant( "123", length = "3", size = "21"))
         StyleVariant(name = "abc",
                 base = "aa",
@@ -33,7 +33,7 @@ class AggregateCatalogItem(val categoryRepository: CategoryRepository,
     }
 
     @RabbitListener(queues = [DeleteCatalogItemCommand.ID])
-    fun deleteItem(command: DeleteCatalogItemCommand) {
+    fun on(command: DeleteCatalogItemCommand) {
         log.info("silinecek catalog item id: ${command.id}")
     }
 
