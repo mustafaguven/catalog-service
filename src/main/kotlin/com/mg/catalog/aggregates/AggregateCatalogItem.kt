@@ -18,7 +18,7 @@ class AggregateCatalogItem(val categoryRepository: CategoryRepository,
         val log = logger(this)
     }
 
-    @RabbitListener(queues = ["CreateCatalogItemCommand"])
+    @RabbitListener(queues = [CreateCatalogItemCommand.QUEUE_ID])
     fun on(command: CreateCatalogItemCommand) = commandGateway.onHandle(command) {
 
 
