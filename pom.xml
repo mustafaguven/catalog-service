@@ -19,12 +19,6 @@
 			<artifactId>event-handler-service</artifactId>
 			<version>1.0.0</version>
 		</dependency>
-		<dependency>
-			<groupId>org.springframework.kotlin</groupId>
-			<artifactId>spring-kotlin-coroutine</artifactId>
-			<version>0.3.6</version>
-			<type>pom</type>
-		</dependency>
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
