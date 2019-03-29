@@ -18,31 +18,31 @@ class AggregateCatalogItem(val categoryRepository: CategoryRepository,
         val log = logger(this)
     }
 
-//    @RabbitListener(queues = [CreateCatalogItemCommand.QUEUE_ID])
-//    fun on(command: CreateCatalogItemCommand) = commandGateway.onHandle(command) {
-//
-//
-//
-//
-//        val size = arrayOf(SizeVariant( "123", length = "3", size = "21"))
-//        StyleVariant(name = "abc",
-//                base = "aa",
-//                sku = "123",
-//                description = "desc",
-//                image = "aaaa",
-//                seasonCode = "asdasd",
-//                sizeVariants =  size)
-//
-//
-//
-//
-//
-//
-//    }
+    @RabbitListener(queues = [CreateCatalogItemCommand.QUEUE_ID])
+    fun on(command: CreateCatalogItemCommand) = commandGateway.onHandle(command) {
 
-//    @RabbitListener(queues = [DeleteCatalogItemCommand.QUEUE_ID])
-//    fun on(command: DeleteCatalogItemCommand) {
-//        log.info("silinecek catalog item id: ${command.id}")
-//    }
+
+
+
+        val size = arrayOf(SizeVariant( "123", length = "3", size = "21"))
+        StyleVariant(name = "abc",
+                base = "aa",
+                sku = "123",
+                description = "desc",
+                image = "aaaa",
+                seasonCode = "asdasd",
+                sizeVariants =  size)
+
+
+
+
+
+
+    }
+
+    @RabbitListener(queues = [DeleteCatalogItemCommand.QUEUE_ID])
+    fun on(command: DeleteCatalogItemCommand) {
+        log.info("silinecek catalog item id: ${command.id}")
+    }
 
 }

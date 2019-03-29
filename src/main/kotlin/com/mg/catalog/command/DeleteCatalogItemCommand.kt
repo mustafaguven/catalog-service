@@ -7,6 +7,6 @@ data class DeleteCatalogItemCommand(
         @JsonProperty("id") val id: Int?) : Commandable() {
 
     companion object {
-        //const val QUEUE_ID = Commandable.QUEUE_CLUSTER_ID.plus("DeleteCatalogItemCommand")
+        const val QUEUE_ID = Commandable.QUEUE_CLUSTER_ID.plus("DeleteCatalogItemCommand")
     }
 }
