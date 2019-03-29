@@ -9,7 +9,6 @@ import com.mg.eventbus.gateway.CommandGateway
 import com.mg.eventbus.inline.logger
 import org.springframework.amqp.rabbit.annotation.RabbitListener
 import org.springframework.stereotype.Service
-import java.util.*
 
 @Service
 class AggregateCatalogItem(val categoryRepository: CategoryRepository,
@@ -19,8 +18,12 @@ class AggregateCatalogItem(val categoryRepository: CategoryRepository,
         val log = logger(this)
     }
 
-    @RabbitListener(queues = [CreateCatalogItemCommand.ID])
+    @RabbitListener(queues = [CreateCatalogItemCommand.QUEUE_ID])
     fun on(command: CreateCatalogItemCommand) = commandGateway.onHandle(command) {
+
+
+
+
         val size = arrayOf(SizeVariant( "123", length = "3", size = "21"))
         StyleVariant(name = "abc",
                 base = "aa",
@@ -30,9 +33,14 @@ class AggregateCatalogItem(val categoryRepository: CategoryRepository,
                 seasonCode = "asdasd",
                 sizeVariants =  size)
 
+
+
+
+
+
     }
 
-    @RabbitListener(queues = [DeleteCatalogItemCommand.ID])
+    @RabbitListener(queues = [DeleteCatalogItemCommand.QUEUE_ID])
     fun on(command: DeleteCatalogItemCommand) {
         log.info("silinecek catalog item id: ${command.id}")
     }

@@ -5,11 +5,13 @@
 		<groupId>com.mg</groupId>
 		<artifactId>kotlin-starter</artifactId>
 		<version>1.0.0</version>
+		<relativePath/>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 
 	<artifactId>catalog-service</artifactId>
 	<packaging>jar</packaging>
+
 
 	<dependencies>
 		<dependency>

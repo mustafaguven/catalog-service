@@ -14,8 +14,6 @@ class ViewCatalog(val categoryRepository: CategoryRepository) {
 
     fun showAll() = categoryRepository.findAll()
 
-
     fun showCatalogItems(_id: ObjectId) = categoryRepository.findBy_id(_id)
-
 
 }

@@ -8,6 +8,6 @@ data class CreateCatalogItemCommand(
         @JsonProperty("styleVariant") val styleVariant: StyleVariant?) : Commandable() {
 
     companion object {
-        const val ID = "CreateCatalogItemCommand"
+        const val QUEUE_ID = QUEUE_CLUSTER_ID.plus("CreateCatalogItemCommand")
     }
 }
