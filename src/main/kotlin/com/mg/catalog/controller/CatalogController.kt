@@ -1,6 +1,5 @@
 package com.mg.catalog.controller
 
-import com.mg.catalog.document.Category
 import com.mg.catalog.query.ViewCatalog
 import com.mg.eventbus.AbstractController
 import org.bson.types.ObjectId
@@ -31,12 +30,13 @@ class CatalogController(val viewCatalog: ViewCatalog) : AbstractController() {
     }
 
     @GetMapping(value = ["/"])
-    fun getAll(): ResponseEntity<List<Category>> {
+    fun getAll(): ResponseEntity<String> {
+
         return ResponseEntity.ok(viewCatalog.showAll())
     }
 
     @GetMapping(value = ["/{id}"])
-    fun getCategoryById(@PathVariable("id") id: ObjectId): ResponseEntity<Category> {
+    fun getCategoryById(@PathVariable("id") id: ObjectId): ResponseEntity<String> {
         return ResponseEntity.ok(viewCatalog.showCatalogItems(id))
     }
 
