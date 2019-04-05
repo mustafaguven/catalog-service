@@ -32,12 +32,12 @@ class CatalogController(val viewCatalog: ViewCatalog) : AbstractController() {
     @GetMapping(value = ["/"])
     fun getAll(): ResponseEntity<String> {
 
-        return ResponseEntity.ok(viewCatalog.showAll())
+        return ResponseEntity.ok(viewCatalog.showAllCatalogItemsWithChildren())
     }
 
     @GetMapping(value = ["/{id}"])
     fun getCategoryById(@PathVariable("id") id: ObjectId): ResponseEntity<String> {
-        return ResponseEntity.ok(viewCatalog.showCatalogItems(id))
+        return ResponseEntity.ok(viewCatalog.showSpecifiedCatalogItemWithChildren(id))
     }
 
     @GetMapping(value = ["/rest"])

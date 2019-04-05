@@ -1,43 +1,56 @@
 package com.mg.catalog.query
 
+import com.mg.catalog.config.MongoDBConfig
 import com.mg.catalog.document.CategoryDocument
-import com.mg.catalog.domain.CategoryTree
-import com.mg.catalog.domain.ParentChildNode
+import com.mg.catalog.domain.SimpleCategoryTree
+import com.mg.catalog.repository.BrandRepository
 import com.mg.catalog.repository.CategoryRepository
 import com.mg.eventbus.inline.logger
 import org.bson.types.ObjectId
+import org.springframework.data.mongodb.core.MongoTemplate
+import org.springframework.data.mongodb.core.aggregation.Aggregation
+import org.springframework.data.mongodb.core.aggregation.LookupOperation
 import org.springframework.stereotype.Component
 
+
 @Component
-class ViewCatalog(val categoryRepository: CategoryRepository) {
+class ViewCatalog(val categoryRepository: CategoryRepository,
+                  val mongoTemplate: MongoTemplate,
+                  val brandRepository: BrandRepository) {
 
     companion object {
         val log = logger(this)
     }
 
-
-    fun showAll(): String {
-        val allCategories = categoryRepository.findAll()
-        val tree = CategoryTree("0", CategoryDocument())
+    fun showAllCatalogItemsWithChildren(): String {
+        val tree = SimpleCategoryTree.createTree()
+        val allCategories = lookupOperation()
         allCategories.forEach {
-            tree.addChild(it.parent ?: "0", it._id, it)
+            tree.addChild(it)
         }
-        return tree.subtreeToString("0")
-
+        return tree.show()
     }
 
+    //fun showSpecifiedCatalogItemWithChildren(_id: ObjectId) = categoryRepository.findBy_id(_id)
 
-    //fun showCatalogItems(_id: ObjectId) = categoryRepository.findBy_id(_id)
-
-
-    fun showCatalogItems(_id: ObjectId): String {
-        val allCategories = categoryRepository.findAll()
-        val tree = CategoryTree("0", CategoryDocument())
+    fun showSpecifiedCatalogItemWithChildren(_id: ObjectId): String {
+        val tree = SimpleCategoryTree.createTree()
+        val allCategories = lookupOperation()
         allCategories.forEach {
-            tree.addChild(it.parent ?: "0", it._id, it)
+            tree.addChild(it)
         }
-
-        return tree.subtreeToString(_id.toString())
-
+        return tree.show(_id.toString())
     }
+
+    fun lookupOperation(): MutableList<CategoryDocument> {
+        val lookupOperation = LookupOperation.newLookup()
+                .from(MongoDBConfig.BRANDS)
+                .localField("brands")
+                .foreignField("_id")
+                .`as`("brands")
+
+        val aggregation = Aggregation.newAggregation(lookupOperation)
+        return mongoTemplate.aggregate(aggregation, MongoDBConfig.CATEGORIES, CategoryDocument::class.java).mappedResults
+    }
+
 }
