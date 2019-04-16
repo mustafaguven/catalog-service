@@ -7,6 +7,6 @@ import org.springframework.data.mongodb.repository.Query
 
 interface CategoryRepository : MongoRepository<CategoryDocument, String> {
 
-    fun findBy_id(_id: ObjectId): CategoryDocument
+    fun findBy_id(_id: ObjectId?): CategoryDocument?
 
 }

@@ -1,21 +1,21 @@
 package com.mg.catalog.domain
 
-import com.google.gson.Gson
-import com.google.gson.GsonBuilder
 import com.mg.catalog.document.CategoryDocument
+import org.codehaus.jackson.map.ObjectMapper
+import java.io.Serializable
 
-class SimpleCategoryTree(id: String, node: CategoryDocument) {
+class SimpleCategoryTree(id: String, node: CategoryDocument) : Serializable {
     private val map = HashMap<String, CategoryDocument>()
     private val root: CategoryDocument = node
-    private val gson: Gson
+    private val objectMapper: ObjectMapper
 
     init {
         map[id] = root
-        gson = GsonBuilder().create()
+        objectMapper = ObjectMapper()
     }
 
     companion object {
-        private const val ROOT_ID = "0"
+        const val ROOT_ID = "0"
         private const val ROOT_TITLE = "root"
         private const val ROOT_TYPE = "Root"
         fun createTree() = SimpleCategoryTree(ROOT_ID, CategoryDocument(_id = ROOT_ID, title = ROOT_TITLE, type = ROOT_TYPE))
@@ -28,6 +28,7 @@ class SimpleCategoryTree(id: String, node: CategoryDocument) {
     }
 
     fun show(id: String? = ROOT_ID): String {
-        return gson.toJson(map[id])
+        return objectMapper.writeValueAsString(map[id])
     }
+
 }
