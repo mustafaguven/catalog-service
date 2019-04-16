@@ -8,8 +8,6 @@ import com.mg.eventbus.gateway.CommandGateway
 import com.mg.eventbus.inline.logger
 import org.springframework.amqp.rabbit.annotation.RabbitListener
 import org.springframework.stereotype.Service
-import java.lang.Exception
-import java.lang.RuntimeException
 
 @Service
 class AggregateCategory(val categoryRepository: CategoryRepository,
@@ -22,22 +20,23 @@ class AggregateCategory(val categoryRepository: CategoryRepository,
     @RabbitListener(queues = [CreateCategoryItemCommand.QUEUE_ID])
     fun on(command: CreateCategoryItemCommand) = commandGateway.onHandle(command) {
         val doc = CategoryDocument(
-                parentId = command.categoryEntity?.parentId,
-                title = command.categoryEntity?.title,
-                priority = command.categoryEntity?.priority,
-                type = command.categoryEntity?.type
+                parentId = command.requestBody?.parentId,
+                title = command.requestBody?.title,
+                priority = command.requestBody?.priority,
+                type = command.requestBody?.type
         )
         categoryRepository.save(doc)
+        //commandGateway.publishEvent()
     }
 
     @RabbitListener(queues = [DeleteCategoryItemCommand.QUEUE_ID])
     fun on(command: DeleteCategoryItemCommand) = commandGateway.onHandle(command) {
-        val categoryDocument = categoryRepository.findBy_id(command.deleteCategoryEntity.id)
+        val categoryDocument = categoryRepository.findBy_id(command.requestBody.id)
         if (categoryDocument != null) {
-            categoryRepository.deleteById(command.deleteCategoryEntity.id.toString())
-            "${command.deleteCategoryEntity.id} deleted successfully"
+            categoryRepository.deleteById(command.requestBody.id.toString())
+            "${command.requestBody.id} deleted successfully"
         } else {
-            Exception("${command.deleteCategoryEntity.id} not found")
+            Exception("${command.requestBody.id} not found")
         }
     }
 
