@@ -5,7 +5,7 @@ import com.mg.catalog.command.DeleteCategoryItemCommand
 import com.mg.catalog.domain.request.CreateCategoryRequestBody
 import com.mg.catalog.domain.request.DeleteCategoryRequestBody
 import com.mg.eventbus.AbstractController
-import com.mg.eventbus.gateway.CommandGateway
+import com.mg.eventbus.gateway.EveCom
 import com.mg.eventbus.response.BaseResponse
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.cloud.context.config.annotation.RefreshScope
@@ -22,29 +22,27 @@ import java.util.concurrent.CompletableFuture
 @RestController
 @RequestMapping("/category/command")
 @ResponseStatus(HttpStatus.ACCEPTED)
-class CatalogCommandController(val commandGateway: CommandGateway) : AbstractController() {
+class CatalogCommandController(val eveCom: EveCom) : AbstractController() {
 
     @Value("\${app.id}")
     private val instance: String? = null
 
     @PostMapping(value = ["/create"])
-    fun createItem(@RequestBody request: CreateCategoryRequestBody?): CompletableFuture<ResponseEntity<BaseResponse>>? {
-        return commandGateway.send(CreateCategoryItemCommand(request))
+    fun create(@RequestBody request: CreateCategoryRequestBody?): CompletableFuture<ResponseEntity<BaseResponse>>? {
+        return eveCom.sendCommand(CreateCategoryItemCommand(request))
     }
 
     @DeleteMapping(value = ["/delete"])
-    fun deleteItem(@RequestBody request: DeleteCategoryRequestBody): CompletableFuture<ResponseEntity<BaseResponse>> {
-        return commandGateway.send(DeleteCategoryItemCommand(request))
+    fun delete(@RequestBody request: DeleteCategoryRequestBody): CompletableFuture<ResponseEntity<BaseResponse>> {
+        return eveCom.sendCommand(DeleteCategoryItemCommand(request))
     }
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     fun getCommands(): ResponseEntity<ResourceSupport> {
         val commands = ResourceSupport()
-        commands.add(linkTo(methodOn(this::class.java).createItem(null)).withRel("create").withTitle(POST))
-        commands.add(linkTo(methodOn(this::class.java).deleteItem(DeleteCategoryRequestBody(null))).withRel("delete").withTitle(DELETE))
+        commands.add(linkTo(methodOn(this::class.java).create(null)).withRel("create").withType(POST).withTitle("creates category"))
+        commands.add(linkTo(methodOn(this::class.java).delete(DeleteCategoryRequestBody(null))).withRel("delete").withType(DELETE).withTitle("deletes category"))
         return ResponseEntity.ok(commands)
     }
-
-
 }
