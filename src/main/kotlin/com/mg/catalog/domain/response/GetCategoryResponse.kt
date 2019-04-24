@@ -5,4 +5,5 @@ import com.mg.catalog.document.CategoryDocument
 
 data class GetCategoryResponse(
         @JsonProperty("isCached") val isCached: Boolean,
-        @JsonProperty("categoryTree") var categoryTree: CategoryDocument)
+        @JsonProperty("categoryTree") var categoryTree: CategoryDocument,
+        @JsonProperty("remainingSeconds") var remainingSeconds: Long)

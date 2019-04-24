@@ -27,17 +27,19 @@ class ViewCatalog(val categoryRepository: CategoryRepository,
     fun showSpecifiedCatalogItemWithChildren(_id: ObjectId, retrieveCachedData: Boolean = false) = getCategoryTree(_id.toString(), retrieveCachedData)
 
     private fun getCategoryTree(id: String? = "0", retrieveCachedData: Boolean = false): GetCategoryResponse {
+        var remainingSeconds = 0L
         val data = if (!retrieveCachedData) {
             getCategoriesFromMongo(id)
         } else {
-            val cached = redisTemplate.opsForValue().get(CATEGORIES) as CategoryDocument?
+            val cached = redisTemplate.opsForValue().get(CATEGORIES.plus(id)) as CategoryDocument?
+            remainingSeconds = redisTemplate.getExpire(CATEGORIES.plus(id), TimeUnit.SECONDS)
             cached?.let {
                 log.info("retrieving from redis")
                 cached
             } ?: getCategoriesFromMongo(id)
         }
 
-        return GetCategoryResponse(retrieveCachedData, data)
+        return GetCategoryResponse(retrieveCachedData, data, remainingSeconds)
     }
 
     private fun getCategoriesFromMongo(id: String?): CategoryDocument {
@@ -48,8 +50,8 @@ class ViewCatalog(val categoryRepository: CategoryRepository,
             tree.addChild(it)
         }
         val result = tree.show(id)
-        redisTemplate.opsForValue().set(CATEGORIES, result)
-        redisTemplate.expire(CATEGORIES, 30, TimeUnit.MINUTES)
+        redisTemplate.opsForValue().set(CATEGORIES.plus(id), result)
+        redisTemplate.expire(CATEGORIES.plus(id), 30, TimeUnit.MINUTES)
         return result
     }
 
