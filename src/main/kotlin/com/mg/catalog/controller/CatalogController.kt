@@ -1,5 +1,6 @@
 package com.mg.catalog.controller
 
+import com.mg.catalog.domain.response.GetCategoryResponse
 import com.mg.catalog.query.ViewCatalog
 import com.mg.eventbus.AbstractController
 import org.bson.types.ObjectId
@@ -10,10 +11,7 @@ import org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo
 import org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.ResponseStatus
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 
 @RefreshScope
 @RestController
@@ -30,14 +28,14 @@ class CatalogController(val viewCatalog: ViewCatalog) : AbstractController() {
     }
 
     @GetMapping(value = ["/"])
-    fun getAll(): ResponseEntity<String> {
-
-        return ResponseEntity.ok(viewCatalog.showAllCatalogItemsWithChildren())
+    fun getAll(@RequestHeader(required = false, name = "retrieveCachedData") retrieveCachedData: Boolean = false): ResponseEntity<GetCategoryResponse> {
+        return ResponseEntity.ok(viewCatalog.showAllCatalogItemsWithChildren(retrieveCachedData))
     }
 
     @GetMapping(value = ["/{id}"])
-    fun getCategoryById(@PathVariable("id") id: ObjectId): ResponseEntity<String> {
-        return ResponseEntity.ok(viewCatalog.showSpecifiedCatalogItemWithChildren(id))
+    fun getCategoryById(@PathVariable("id") id: ObjectId,
+                        @RequestHeader(required = false, name = "retrieveCachedData") retrieveCachedData: Boolean = false): ResponseEntity<GetCategoryResponse> {
+        return ResponseEntity.ok(viewCatalog.showSpecifiedCatalogItemWithChildren(id, retrieveCachedData))
     }
 
     @GetMapping(value = ["/rest"])

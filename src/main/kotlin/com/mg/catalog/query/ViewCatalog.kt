@@ -1,6 +1,7 @@
 package com.mg.catalog.query
 
 import com.mg.catalog.domain.SimpleCategoryTree
+import com.mg.catalog.domain.response.GetCategoryResponse
 import com.mg.catalog.repository.CategoryRepository
 import com.mg.eventbus.inline.logger
 import org.bson.types.ObjectId
@@ -15,27 +16,32 @@ class ViewCatalog(val categoryRepository: CategoryRepository,
                   val redisTemplate: RedisTemplate<String, Any>,
                   val mongoTemplate: MongoTemplate) {
 
-    //var cache: ExpirableCache<SimpleCategoryTree> = ExpirableCache()
-
     companion object {
         val log = logger(this)
         const val CATEGORIES = "CATEGORIES"
     }
 
-    fun showAllCatalogItemsWithChildren() = getCategoryTree()
+    fun showAllCatalogItemsWithChildren(retrieveCachedData: Boolean) = getCategoryTree(retrieveCachedData = retrieveCachedData)
 
-    fun showSpecifiedCatalogItemWithChildren(_id: ObjectId) = getCategoryTree(_id.toString())
+    fun showSpecifiedCatalogItemWithChildren(_id: ObjectId, retrieveCachedData: Boolean = false) = getCategoryTree(_id.toString(), retrieveCachedData)
 
-    private fun getCategoryTree(id: String? = "0"): String {
-        val cached = redisTemplate.opsForValue().get(CATEGORIES) as String?
-        return cached?.let {
-            log.info("retrieving from redis")
-            cached
-        } ?: getCategoriesFromMongo(id)
+    private fun getCategoryTree(id: String? = "0", retrieveCachedData: Boolean = false): GetCategoryResponse {
+        val data: String
+        data = if (!retrieveCachedData) {
+            getCategoriesFromMongo(id)
+        } else {
+            val cached = redisTemplate.opsForValue().get(CATEGORIES) as String?
+            cached?.let {
+                log.info("retrieving from redis")
+                cached
+            } ?: getCategoriesFromMongo(id)
+        }
+
+        return GetCategoryResponse(retrieveCachedData, data)
     }
 
     private fun getCategoriesFromMongo(id: String?): String {
-        log.warn("not found in cache, retrieving from db instead")
+        log.warn("retrieving from db")
         val tree = SimpleCategoryTree.createTree()
         val allCategories = categoryRepository.findAll()
         allCategories.forEach {

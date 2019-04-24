@@ -27,7 +27,7 @@ class AggregateCategory(val categoryRepository: CategoryRepository,
                 priority = command.requestBody?.priority,
                 type = command.requestBody?.type
         )
-       val category = categoryRepository.save(doc)
+        val category = categoryRepository.save(doc)
         eveCom.publishEvent(CategoryCreatedEvent(category._id))
         category
     }
