@@ -4,7 +4,6 @@ import com.mg.catalog.command.CreateCategoryItemCommand
 import com.mg.catalog.command.DeleteCategoryItemCommand
 import com.mg.catalog.domain.request.CreateCategoryRequestBody
 import com.mg.catalog.domain.request.DeleteCategoryRequestBody
-import com.mg.catalog.domain.response.GetCategoryResponse
 import com.mg.eventbus.AbstractController
 import com.mg.eventbus.gateway.EveCom
 import com.mg.eventbus.response.BaseResponse
