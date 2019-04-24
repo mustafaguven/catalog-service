@@ -28,8 +28,10 @@ class SimpleCategoryTree(id: String, node: CategoryDocument) : Serializable {
         map[categoryDocument._id!!] = categoryDocument
     }
 
-   fun show(id: String? = ROOT_ID): String {
-        return objectMapper.writeValueAsString(map[id])
+   fun show(id: String? = ROOT_ID): CategoryDocument{
+        return map[id]!!
     }
+
+
 
 }

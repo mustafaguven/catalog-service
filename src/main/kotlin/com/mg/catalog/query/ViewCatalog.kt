@@ -1,5 +1,6 @@
 package com.mg.catalog.query
 
+import com.mg.catalog.document.CategoryDocument
 import com.mg.catalog.domain.SimpleCategoryTree
 import com.mg.catalog.domain.response.GetCategoryResponse
 import com.mg.catalog.repository.CategoryRepository
@@ -26,11 +27,10 @@ class ViewCatalog(val categoryRepository: CategoryRepository,
     fun showSpecifiedCatalogItemWithChildren(_id: ObjectId, retrieveCachedData: Boolean = false) = getCategoryTree(_id.toString(), retrieveCachedData)
 
     private fun getCategoryTree(id: String? = "0", retrieveCachedData: Boolean = false): GetCategoryResponse {
-        val data: String
-        data = if (!retrieveCachedData) {
+        val data = if (!retrieveCachedData) {
             getCategoriesFromMongo(id)
         } else {
-            val cached = redisTemplate.opsForValue().get(CATEGORIES) as String?
+            val cached = redisTemplate.opsForValue().get(CATEGORIES) as CategoryDocument?
             cached?.let {
                 log.info("retrieving from redis")
                 cached
@@ -40,7 +40,7 @@ class ViewCatalog(val categoryRepository: CategoryRepository,
         return GetCategoryResponse(retrieveCachedData, data)
     }
 
-    private fun getCategoriesFromMongo(id: String?): String {
+    private fun getCategoriesFromMongo(id: String?): CategoryDocument {
         log.warn("retrieving from db")
         val tree = SimpleCategoryTree.createTree()
         val allCategories = categoryRepository.findAll()
@@ -49,7 +49,7 @@ class ViewCatalog(val categoryRepository: CategoryRepository,
         }
         val result = tree.show(id)
         redisTemplate.opsForValue().set(CATEGORIES, result)
-        redisTemplate.expire(CATEGORIES, 10, TimeUnit.SECONDS)
+        redisTemplate.expire(CATEGORIES, 30, TimeUnit.MINUTES)
         return result
     }
 

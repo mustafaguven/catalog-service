@@ -3,6 +3,7 @@ package com.mg.catalog.controller
 import com.mg.catalog.domain.response.GetCategoryResponse
 import com.mg.catalog.query.ViewCatalog
 import com.mg.eventbus.AbstractController
+import com.mg.eventbus.response.BaseResponse
 import org.bson.types.ObjectId
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.cloud.context.config.annotation.RefreshScope
@@ -28,14 +29,20 @@ class CatalogController(val viewCatalog: ViewCatalog) : AbstractController() {
     }
 
     @GetMapping(value = ["/"])
-    fun getAll(@RequestHeader(required = false, name = "retrieveCachedData") retrieveCachedData: Boolean = false): ResponseEntity<GetCategoryResponse> {
-        return ResponseEntity.ok(viewCatalog.showAllCatalogItemsWithChildren(retrieveCachedData))
+    fun getAll(@RequestHeader(required = false, name = "retrieveCachedData") retrieveCachedData: Boolean = false)
+            : ResponseEntity<BaseResponse<GetCategoryResponse>> {
+        val data = viewCatalog.showAllCatalogItemsWithChildren(retrieveCachedData)
+        val response = BaseResponse(BaseResponse.SUCCESS, data = data)
+        return ResponseEntity.ok(response)
     }
 
     @GetMapping(value = ["/{id}"])
     fun getCategoryById(@PathVariable("id") id: ObjectId,
-                        @RequestHeader(required = false, name = "retrieveCachedData") retrieveCachedData: Boolean = false): ResponseEntity<GetCategoryResponse> {
-        return ResponseEntity.ok(viewCatalog.showSpecifiedCatalogItemWithChildren(id, retrieveCachedData))
+                        @RequestHeader(required = false, name = "retrieveCachedData") retrieveCachedData: Boolean = false)
+            : ResponseEntity<BaseResponse<GetCategoryResponse>> {
+        val data = viewCatalog.showSpecifiedCatalogItemWithChildren(id, retrieveCachedData)
+        val response = BaseResponse(BaseResponse.SUCCESS, data = data)
+        return ResponseEntity.ok(response)
     }
 
     @GetMapping(value = ["/rest"])
