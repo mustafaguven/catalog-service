@@ -7,7 +7,6 @@ import com.mg.catalog.domain.request.DeleteCategoryRequestBody
 import com.mg.eventbus.AbstractController
 import com.mg.eventbus.gateway.EveCom
 import com.mg.eventbus.response.BaseResponse
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.cloud.context.config.annotation.RefreshScope
 import org.springframework.hateoas.ResourceSupport
 import org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo
@@ -23,9 +22,6 @@ import java.util.concurrent.CompletableFuture
 @RequestMapping("/category/command")
 @ResponseStatus(HttpStatus.ACCEPTED)
 class CatalogCommandController(val eveCom: EveCom) : AbstractController() {
-
-    @Value("\${app.id}")
-    private val instance: String? = null
 
     @PostMapping(value = ["/create"])
     fun create(@RequestBody request: CreateCategoryRequestBody?): CompletableFuture<ResponseEntity<BaseResponse<Any>>>? {

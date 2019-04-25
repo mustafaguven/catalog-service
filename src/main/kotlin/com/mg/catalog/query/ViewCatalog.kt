@@ -20,6 +20,7 @@ class ViewCatalog(val categoryRepository: CategoryRepository,
     companion object {
         val log = logger(this)
         const val CATEGORIES = "CATEGORIES"
+        const val DEFAULT_REMAINING_SECONDS = 30L * 60 //30 minutes
     }
 
     fun showAllCatalogItemsWithChildren(retrieveCachedData: Boolean) = getCategoryTree(retrieveCachedData = retrieveCachedData)
@@ -27,19 +28,21 @@ class ViewCatalog(val categoryRepository: CategoryRepository,
     fun showSpecifiedCatalogItemWithChildren(_id: ObjectId, retrieveCachedData: Boolean = false) = getCategoryTree(_id.toString(), retrieveCachedData)
 
     private fun getCategoryTree(id: String? = "0", retrieveCachedData: Boolean = false): GetCategoryResponse {
-        var remainingSeconds = 0L
+        var remainingSeconds = DEFAULT_REMAINING_SECONDS
+        var isCachedData = false
         val data = if (!retrieveCachedData) {
             getCategoriesFromMongo(id)
         } else {
             val cached = redisTemplate.opsForValue().get(CATEGORIES.plus(id)) as CategoryDocument?
-            remainingSeconds = redisTemplate.getExpire(CATEGORIES.plus(id), TimeUnit.SECONDS)
             cached?.let {
+                remainingSeconds = redisTemplate.getExpire(CATEGORIES.plus(id), TimeUnit.SECONDS)
+                isCachedData = true
                 log.info("retrieving from redis")
                 cached
             } ?: getCategoriesFromMongo(id)
         }
 
-        return GetCategoryResponse(retrieveCachedData, data, remainingSeconds)
+        return GetCategoryResponse(isCachedData, data, remainingSeconds)
     }
 
     private fun getCategoriesFromMongo(id: String?): CategoryDocument {
@@ -51,7 +54,7 @@ class ViewCatalog(val categoryRepository: CategoryRepository,
         }
         val result = tree.show(id)
         redisTemplate.opsForValue().set(CATEGORIES.plus(id), result)
-        redisTemplate.expire(CATEGORIES.plus(id), 30, TimeUnit.MINUTES)
+        redisTemplate.expire(CATEGORIES.plus(id), DEFAULT_REMAINING_SECONDS, TimeUnit.SECONDS)
         return result
     }
 

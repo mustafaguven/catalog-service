@@ -29,7 +29,7 @@ class CatalogController(val viewCatalog: ViewCatalog) : AbstractController() {
     }
 
     @GetMapping(value = ["/"])
-    fun getAll(@RequestHeader(required = false, name = "retrieveCachedData") retrieveCachedData: Boolean = false)
+    fun getAllCategory(@RequestHeader(required = false, name = "retrieveCachedData") retrieveCachedData: Boolean = false)
             : ResponseEntity<BaseResponse<GetCategoryResponse>> {
         val data = viewCatalog.showAllCatalogItemsWithChildren(retrieveCachedData)
         val response = BaseResponse(BaseResponse.SUCCESS, data = data)

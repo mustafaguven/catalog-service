@@ -4,6 +4,6 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import com.mg.catalog.document.CategoryDocument
 
 data class GetCategoryResponse(
-        @JsonProperty("isCached") val isCached: Boolean,
+        @JsonProperty("fromCache") val fromCache: Boolean,
         @JsonProperty("categoryTree") var categoryTree: CategoryDocument,
         @JsonProperty("remainingSeconds") var remainingSeconds: Long)
