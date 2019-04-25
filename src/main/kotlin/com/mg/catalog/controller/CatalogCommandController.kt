@@ -8,8 +8,6 @@ import com.mg.eventbus.AbstractController
 import com.mg.eventbus.gateway.EveCom
 import com.mg.eventbus.response.BaseResponse
 import org.springframework.cloud.context.config.annotation.RefreshScope
-import org.springframework.hateoas.ResourceSupport
-import org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo
 import org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -33,12 +31,10 @@ class CatalogCommandController(val eveCom: EveCom) : AbstractController() {
         return eveCom.sendCommand(DeleteCategoryItemCommand(request))
     }
 
-    @GetMapping
-    @ResponseStatus(HttpStatus.OK)
-    fun getCommands(): ResponseEntity<ResourceSupport> {
-        val commands = ResourceSupport()
-        commands.add(linkTo(methodOn(this::class.java).create(null)).withRel("create").withType(POST).withTitle("creates category"))
-        commands.add(linkTo(methodOn(this::class.java).delete(DeleteCategoryRequestBody(null))).withRel("delete").withType(DELETE).withTitle("deletes category"))
-        return ResponseEntity.ok(commands)
+    override fun createRestLinks(): List<ControllerLink>? {
+        return listOf(
+                ControllerLink(method = methodOn(this::class.java).create(null)!!, rel = COMMAND, methodType = POST, title = "creates category"),
+                ControllerLink(method = methodOn(this::class.java).delete(DeleteCategoryRequestBody(null)), rel = COMMAND, methodType = DELETE, title = "deletes category")
+        )
     }
 }

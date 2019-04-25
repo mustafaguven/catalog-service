@@ -19,15 +19,6 @@ import org.springframework.web.bind.annotation.*
 @ResponseStatus(HttpStatus.ACCEPTED)
 class CatalogController(val viewCatalog: ViewCatalog) : AbstractController() {
 
-    @Value("\${app.id}")
-    private val instance: String? = null
-
-    @GetMapping(value = ["/id"])
-    fun instanceId(): ResponseEntity<String> {
-        val id = "{ \"catalog_service_running_instance_id\": \"$instance\"}"
-        return ResponseEntity.ok(id)
-    }
-
     @GetMapping(value = ["/"])
     fun getAllCategory(@RequestHeader(required = false, name = "retrieveCachedData") retrieveCachedData: Boolean = false)
             : ResponseEntity<BaseResponse<GetCategoryResponse>> {
@@ -45,13 +36,12 @@ class CatalogController(val viewCatalog: ViewCatalog) : AbstractController() {
         return ResponseEntity.ok(response)
     }
 
-    @GetMapping(value = ["/rest"])
-    @ResponseStatus(HttpStatus.OK)
-    fun getLinks(): ResponseEntity<ResourceSupport> {
-        val commands = ResourceSupport()
-        commands.add(linkTo(methodOn(CatalogCommandController::class.java).getCommands()).withRel("command").withTitle("GET"))
-        commands.add(linkTo(methodOn(this::class.java).instanceId()).withRel("instanceId").withType("GET"))
-        return ResponseEntity.ok(commands)
+    override fun createRestLinks(): List<ControllerLink> {
+        return listOf(
+                ControllerLink(method = methodOn(CatalogCommandController::class.java).createRestLinks()!!, rel = QUERY, methodType = GET, title="command"),
+                ControllerLink(method = methodOn(this::class.java).getAllCategory(), rel = QUERY, methodType = GET, title="getAllCategory"),
+                ControllerLink(method = methodOn(this::class.java).getCategoryById(ObjectId()), rel = QUERY, methodType = GET, title="getCategoryById")
+        )
     }
 
 }
